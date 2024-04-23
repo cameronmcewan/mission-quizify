@@ -41,13 +41,8 @@ class DocumentProcessor:
         ```
         """
         
-        # Step 1: Render a file uploader widget. Replace 'None' with the Streamlit file uploader code.
-        uploaded_files = st.file_uploader(
-            #####################################
-            # Allow only type `pdf`
-            # Allow multiple PDFs for ingestion
-            #####################################
-        )
+        # Step 1: Render a file uploader widget. Replace 'None' with the Streamlit file uploader code.Allow only type `pdf`. Allow multiple PDFs for ingestion
+        uploaded_files = st.file_uploader("Upload PDF", type=["pdf"], accept_multiple_files=True)
         
         if uploaded_files is not None:
             for uploaded_file in uploaded_files:
@@ -67,6 +62,7 @@ class DocumentProcessor:
                 # https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf#using-pypdf
                 # You will need to figure out how to use PyPDFLoader to process the temporary file.
                 
+
                 # Step 3: Then, Add the extracted pages to the 'pages' list.
                 #####################################
                 
