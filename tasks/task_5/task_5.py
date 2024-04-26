@@ -1,11 +1,9 @@
 import sys
 import os
-from langchain_text_splitters import TextSplitter
 import streamlit as st
 sys.path.append(os.path.abspath('../../'))
 from tasks.task_3.task_3 import DocumentProcessor
 from tasks.task_4.task_4 import EmbeddingClient
-
 
 # Import Task libraries
 from langchain_core.documents import Document
@@ -53,29 +51,44 @@ class ChromaCollectionCreator:
         if len(self.processor.pages) == 0:
             st.error("No documents found!", icon="🚨")
             return
+        else:
+            st.success("Processed documents found!", icon="✅")
+
+        # # Write the type and content of the first element to ensure it's a list of strings
+        # if self.processor.pages:
+        #     st.success("self.processor.pages exists. Checks...")
+        #     st.write("Type of self.processor.pages:", type(self.processor.pages))
+        #     st.write("Type of the first item in self.processor.pages:", type(self.processor.pages[0]))
+        #     st.write("Content of the first item in self.processor.pages:", self.processor.pages[0].page_content)
 
         # Step 2: Split documents into text chunks
-        # Use a TextSplitter from Langchain to split the documents into smaller text chunks
-        # https://python.langchain.com/docs/modules/data_connection/document_transformers/character_text_splitter
-        # [Your code here for splitting documents]
+        # - Use a TextSplitter from Langchain to split the documents into smaller text chunks
+        # - https://python.langchain.com/docs/modules/data_connection/document_transformers/character_text_splitter
+        
         text_splitter = CharacterTextSplitter(
             separator="\n\n",
             chunk_size=1000,
-            chunk_overlap=200,
+            chunk_overlap=400,
             length_function=len,
             is_separator_regex=False,
         )
-        texts = text_splitter.create_documents([self.processor])
-        print(texts[0])
-        
-        if texts is not None:
-            st.success(f"Successfully split pages to {len(texts)} documents!", icon="✅")
 
+        text_chunks = text_splitter.split_documents(documents=self.processor.pages)
+
+        if text_chunks is not None:
+            st.success(f"Successfully split pages to {len(text_chunks)} documents!", icon="✅")
+        else:
+            st.error("Failed to split pages into text chunks!", icon="🚨")
+            return  # Exit the method if text chunk creation fails
+        
         # Step 3: Create the Chroma Collection
         # https://docs.trychroma.com/
         # Create a Chroma in-memory client using the text chunks and the embeddings model
         # [Your code here for creating Chroma collection]
-        
+        chroma_collection = Chroma.from_documents(text_chunks, embedding=embed_client) # create a Chroma collection in memory
+        self.db = chroma_collection
+
+
         if self.db:
             st.success("Successfully created Chroma Collection!", icon="✅")
         else:
@@ -103,7 +116,7 @@ if __name__ == "__main__":
     
     embed_config = {
         "model_name": "textembedding-gecko@003",
-        "project": "YOUR PROJECT ID HERE",
+        "project": "western-notch-420514",
         "location": "us-central1"
     }
     
