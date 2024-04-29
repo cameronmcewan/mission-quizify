@@ -85,7 +85,7 @@ class ChromaCollectionCreator:
         # https://docs.trychroma.com/
         # Create a Chroma in-memory client using the text chunks and the embeddings model
         # [Your code here for creating Chroma collection]
-        chroma_collection = Chroma.from_documents(text_chunks, embedding=embed_client) # create a Chroma collection in memory
+        chroma_collection = Chroma.from_documents(text_chunks, embedding=self.embed_model) # create a Chroma collection in memory
         self.db = chroma_collection
 
 
